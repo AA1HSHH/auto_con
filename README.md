@@ -11,7 +11,7 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple psutil requests
 D:/Program/miniconda3/envs/net/python.exe e:/code/py/auto_con/net.py
 ```
 ## 定时执行
-
+可参考 https://www.cnblogs.com/sui776265233/p/13602893.html
 ## 致谢
 GPT3.5
 

@@ -2,7 +2,8 @@ import os
 import socket
 import psutil
 import requests
-if __name__ == "__main__":
+import time
+def connect(user, passwd):
     # 连接NJUPT-CMCC WLAN
     os.system("netsh wlan connect name=NJUPT-CMCC")
     # 处理 NameResolutionError ailed to resolve 'p.njupt.edu.cn'
@@ -22,8 +23,6 @@ if __name__ == "__main__":
         os.exit(1)
 
     # 构造请求体
-    user = "name"
-    passwd = "pass"
     url = "https://p.njupt.edu.cn:802/eportal/portal/login?callback=dr1003&login_method=1&user_account=%2C0%2C"+user+"%40cmcc&user_password="+passwd+"&wlan_user_ip="+wlan_ip+"&wlan_user_ipv6=&wlan_user_mac=000000000000&wlan_ac_ip=&wlan_ac_name=&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=3140&lang=zh"
     
     try:
@@ -35,5 +34,12 @@ if __name__ == "__main__":
             print("连接成功")
         else:
             print(f"失败: {response.status_code} - {response.reason}")
+    except requests.SSLError as e:
+        print("关闭代理")
     except Exception as e:
-        print(f"Error: {e}")
+        time.sleep(10)
+        print("重试。。。。")
+        connect(user, passwd)
+        
+if __name__ == "__main__":
+    connect("user","passwd")
