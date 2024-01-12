@@ -3,6 +3,8 @@ import socket
 import psutil
 import requests
 import time
+import tkinter as tk
+from tkinter import messagebox
 def connect(user, passwd):
     # 连接NJUPT-CMCC WLAN
     os.system("netsh wlan connect name=NJUPT-CMCC")
@@ -34,8 +36,18 @@ def connect(user, passwd):
             print("连接成功")
         else:
             print(f"失败: {response.status_code} - {response.reason}")
-    except requests.SSLError as e:
-        print("关闭代理")
+    except requests.exceptions.ProxyError as e:
+        # 创建主窗口
+        root = tk.Tk()
+        root.title("警告")
+        root.geometry("300x100")
+        text_label = tk.Label(root, text="关闭代理后重试！")
+        text_label.pack(pady=20)
+        # 启动主循环
+        root.mainloop()
+        
+        print("重试。。。。")
+        connect(user, passwd)
     except Exception as e:
         time.sleep(10)
         print("重试。。。。")
