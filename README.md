@@ -12,6 +12,9 @@ D:/Program/miniconda3/envs/net/python.exe e:/code/py/auto_con/net.py
 ```
 ## 定时执行
 可参考 https://www.cnblogs.com/sui776265233/p/13602893.html
+## 报错
+### ProxyError
+可向系统代理设置添加`p.njupt.edu.cn;`
 ## 致谢
 GPT3.5
 

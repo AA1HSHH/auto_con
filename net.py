@@ -4,12 +4,38 @@ import psutil
 import requests
 import time
 import tkinter as tk
-from tkinter import messagebox
-def connect(user, passwd):
+import subprocess
+from requests.adapters import HTTPAdapter
+def get_current_wlan_name():
+    try:
+        # 使用 netsh 命令获取 WLAN 名称
+        result = subprocess.run(["netsh", "wlan", "show", "interfaces"], capture_output=True, text=True)
+        output_lines = result.stdout.splitlines()
+
+        # 寻找 WLAN 名称所在行
+        for line in output_lines:
+            if "SSID" in line:
+                wlan_name = line.split(":")[1].strip()
+                return wlan_name
+
+        return None  # 未找到 WLAN 名称
+
+    except Exception as e:
+        print(f"发生错误: {e}")
+        return None
+
+
+def connect(user, passwd, num):
+
+    if num == 0:
+        print("重试失败")
+        return
+    num -= 1
+    
     # 连接NJUPT-CMCC WLAN
-    os.system("netsh wlan connect name=NJUPT-CMCC")
-    # 处理 NameResolutionError ailed to resolve 'p.njupt.edu.cn'
-    os.system("nslookup p.njupt.edu.cn")
+    wlan_name = get_current_wlan_name()
+    if wlan_name != "NJUPT-CMCC" or wlan_name == None:
+        os.system("netsh wlan connect name=NJUPT-CMCC")
 
     # 获取ip地址
     net_interfaces = psutil.net_if_addrs()
@@ -18,10 +44,7 @@ def connect(user, passwd):
         if interface == "WLAN":
             wlan_ip = [addr.address for addr in addresses if addr.family == socket.AF_INET][0]
             break
-    if wlan_ip:
-        print(f"WLAN IPv4 Address: {wlan_ip}")
-    else:
-        print("WLAN IPv4 Address not found.")
+    if wlan_ip == None:        
         os.exit(1)
 
     # 构造请求体
@@ -36,22 +59,10 @@ def connect(user, passwd):
             print("连接成功")
         else:
             print(f"失败: {response.status_code} - {response.reason}")
-    except requests.exceptions.ProxyError as e:
-        # 创建主窗口
-        root = tk.Tk()
-        root.title("警告")
-        root.geometry("300x100")
-        text_label = tk.Label(root, text="关闭代理后重试！")
-        text_label.pack(pady=20)
-        # 启动主循环
-        root.mainloop()
-        
-        print("重试。。。。")
-        connect(user, passwd)
     except Exception as e:
         time.sleep(10)
         print("重试。。。。")
-        connect(user, passwd)
+        connect(user, passwd, 5)
         
 if __name__ == "__main__":
-    connect("user","passwd")
+    connect("name","passwd",1)
