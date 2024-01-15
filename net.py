@@ -3,7 +3,7 @@ import socket
 import psutil
 import requests
 import time
-import tkinter as tk
+from tkinter import messagebox
 import subprocess
 from requests.adapters import HTTPAdapter
 def get_current_wlan_name():
@@ -24,11 +24,12 @@ def get_current_wlan_name():
         print(f"发生错误: {e}")
         return None
 
-
+err = None
 def connect(user, passwd, num):
-
+    global err
     if num == 0:
         print("重试失败")
+        print(err)
         return
     num -= 1
     
@@ -59,10 +60,15 @@ def connect(user, passwd, num):
             print("连接成功")
         else:
             print(f"失败: {response.status_code} - {response.reason}")
+    except requests.exceptions.ProxyError as e:
+        err = e
+        messagebox.showwarning("警告","取消代理后关闭对话框重试\n 或将`p.njupt.edu.cn;`添加系统代理设置")
+        connect(user, passwd, num)
     except Exception as e:
         time.sleep(10)
-        print("重试。。。。")
-        connect(user, passwd, 5)
+        err = e
+        print("重试第%d次。。。。"% (5 - num))
+        connect(user, passwd, num)
         
 if __name__ == "__main__":
-    connect("name","passwd",1)
+    connect("user","passwd",5)
