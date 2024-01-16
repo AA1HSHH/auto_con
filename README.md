@@ -17,8 +17,9 @@ D:/Program/miniconda3/envs/net/python.exe e:/code/py/auto_con/net.py
 
 ![图片](https://raw.githubusercontent.com/AA1HSHH/auto_con/master/img.png)
 
-第一项是定时任务
-第二项是解锁屏幕的时候联网，远程主机不要配置
+第一项定时任务执行，可用于长期在线主机
+
+第二项电脑启动时执行
 
 ## 报错
 ### ProxyError

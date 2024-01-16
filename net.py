@@ -5,7 +5,7 @@ import requests
 import time
 from tkinter import messagebox
 import subprocess
-from requests.adapters import HTTPAdapter
+import re
 def get_current_wlan_name():
     try:
         # 使用 netsh 命令获取 WLAN 名称
@@ -50,16 +50,17 @@ def connect(user, passwd, num):
 
     # 构造请求体
     url = "https://p.njupt.edu.cn:802/eportal/portal/login?callback=dr1003&login_method=1&user_account=%2C0%2C"+user+"%40cmcc&user_password="+passwd+"&wlan_user_ip="+wlan_ip+"&wlan_user_ipv6=&wlan_user_mac=000000000000&wlan_ac_ip=&wlan_ac_name=&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=3140&lang=zh"
-    
     try:
         response = requests.get(url)
 
         # 检查响应状态码
-        if response.status_code == 200:
+        if response.status_code == 200 and ("错误" not in response.text):
             # 打印响应内容
             print("连接成功")
         else:
-            print(f"失败: {response.status_code} - {response.reason}")
+            print(f"失败: {response.status_code} - {response.text}")
+            msg = re.search(r'"msg":"(.*?)"', response.text)
+            messagebox.showwarning("警告", "网页报错：" + msg.group(1))
     except requests.exceptions.ProxyError as e:
         err = e
         messagebox.showwarning("警告","取消代理后关闭对话框重试\n 或将`p.njupt.edu.cn;`添加系统代理设置")
