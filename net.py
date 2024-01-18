@@ -25,12 +25,18 @@ def get_current_wlan_name():
         return None
 
 err = None
+def retry(user, passwd, num, e):
+    time.sleep(10)
+    err = e
+    print("重试第%d次。。。。"% (5 - num))
+    connect(user, passwd, num)
+
 def connect(user, passwd, num):
     global err
     if num == 0:
         print("重试失败")
         print(err)
-        return
+        os.exit(1)
     num -= 1
     
     # 连接NJUPT-CMCC WLAN
@@ -46,13 +52,12 @@ def connect(user, passwd, num):
             wlan_ip = [addr.address for addr in addresses if addr.family == socket.AF_INET][0]
             break
     if wlan_ip == None:        
-        os.exit(1)
+        retry(user, passwd, num, Exception("未分配IP"))
 
     # 构造请求体
     url = "https://p.njupt.edu.cn:802/eportal/portal/login?callback=dr1003&login_method=1&user_account=%2C0%2C"+user+"%40cmcc&user_password="+passwd+"&wlan_user_ip="+wlan_ip+"&wlan_user_ipv6=&wlan_user_mac=000000000000&wlan_ac_ip=&wlan_ac_name=&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=3140&lang=zh"
     try:
         response = requests.get(url)
-
         # 检查响应状态码
         if response.status_code == 200 and ("错误" not in response.text):
             # 打印响应内容
@@ -66,10 +71,7 @@ def connect(user, passwd, num):
         messagebox.showwarning("警告","取消代理后关闭对话框重试\n 或将`p.njupt.edu.cn;`添加系统代理设置")
         connect(user, passwd, num)
     except Exception as e:
-        time.sleep(10)
-        err = e
-        print("重试第%d次。。。。"% (5 - num))
-        connect(user, passwd, num)
+        retry(user, passwd, num, e)
         
 if __name__ == "__main__":
     connect("user","passwd",5)
