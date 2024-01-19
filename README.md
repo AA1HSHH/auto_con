@@ -5,11 +5,18 @@ conda create -n net python=3.8
 conda activate net
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple psutil requests 
 ```
-## 执行
-第一个参数是conda环境的python位置，第二个参数是文件位置
+## 执行(两种方法)
+1. 直接执行python脚本
 ```
-D:/Program/miniconda3/envs/net/python.exe e:/code/py/auto_con/net.py
+cd AUTO_CON
+conda activate net
+python net.py 用户名 密码
 ```
+2. 执行打包好的程序
+- 双击 net.exe 并且输入用户名和密码
+- 使用定时任务定时执行程序，并且参数列表中添加用户名和密码
+
+
 ## 定时执行
 可参考 https://www.cnblogs.com/sui776265233/p/13602893.html
 

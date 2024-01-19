@@ -1,4 +1,5 @@
 import os
+import sys
 import socket
 import psutil
 import requests
@@ -48,7 +49,7 @@ def connect(user, passwd, num):
     net_interfaces = psutil.net_if_addrs()
     wlan_ip = None
     for interface, addresses in net_interfaces.items():
-        if interface == "WLAN":
+        if "WLAN" in interface:
             wlan_ip = [addr.address for addr in addresses if addr.family == socket.AF_INET][0]
             break
     if wlan_ip == None:        
@@ -74,4 +75,13 @@ def connect(user, passwd, num):
         retry(user, passwd, num, e)
         
 if __name__ == "__main__":
-    connect("user","passwd",5)
+    assert (len(sys.argv) == 3 or len(sys.argv) == 1), "参数错误:参数格式为 python net.py 或者 python net.py 用户名 密码"
+    
+    if len(sys.argv) == 3:
+        user = sys.argv[1]
+        passwd =  sys.argv[2]
+    elif len(sys.argv) == 1:
+        user = input("请输入用户名:")
+        passwd =input("请输入密码:")
+        
+    connect(user,passwd,5)
