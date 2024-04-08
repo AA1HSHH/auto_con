@@ -19,7 +19,7 @@ jobs:
         pip install pyinstaller requests==2.31.0 psutil==5.9.7
     - name: Build .exe with PyInstaller
       run: |
-        pyinstaller -F net.py
+        pyinstaller -F -w net.py
 
     - name: Create Release
       id: create_release
